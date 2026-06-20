@@ -1,17 +1,21 @@
 package com.williambl.bigbuckets.recipe;
 
 import com.williambl.bigbuckets.platform.Services;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 
+import java.rmi.registry.Registry;
+
 public class BigBucketRecipe extends CustomRecipe {
-   public BigBucketRecipe(ResourceLocation idIn) {
-      super(idIn);
+   public BigBucketRecipe(ResourceLocation idIn, CraftingBookCategory category) {
+      super(idIn, category);
    }
 
    @Override
@@ -32,7 +36,7 @@ public class BigBucketRecipe extends CustomRecipe {
    }
 
    @Override
-   public ItemStack assemble(CraftingContainer inv) {
+   public ItemStack assemble(CraftingContainer inv, RegistryAccess access) {
       ItemStack stack = Services.REGISTRY.bigBucketItem().get().getDefaultInstance();
       Services.REGISTRY.bigBucketItem().get().setCapacity(stack, 2 * Services.FLUIDS.bucketVolume());
       return stack;

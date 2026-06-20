@@ -5,7 +5,8 @@ import com.williambl.bigbuckets.BigBucketsMod;
 import com.williambl.bigbuckets.platform.services.IBigBucketsRegistry;
 import com.williambl.bigbuckets.recipe.BigBucketIncreaseCapacityRecipe;
 import com.williambl.bigbuckets.recipe.BigBucketRecipe;
-import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
 
 import java.util.function.Supplier;
 
@@ -16,12 +17,12 @@ public class FabricBigBucketsRegistry implements IBigBucketsRegistry {
     }
 
     @Override
-    public Supplier<SimpleRecipeSerializer<BigBucketRecipe>> bigBucketRecipeSerializer() {
+    public Supplier<SimpleCraftingRecipeSerializer<BigBucketRecipe>> bigBucketRecipeSerializer() {
         return () -> BigBucketsMod.BIG_BUCKET_RECIPE_SERIALIZER;
     }
 
     @Override
-    public Supplier<SimpleRecipeSerializer<BigBucketIncreaseCapacityRecipe>> bigBucketIncreaseCapacityRecipeSerializer() {
+    public Supplier<SimpleCraftingRecipeSerializer<BigBucketIncreaseCapacityRecipe>> bigBucketIncreaseCapacityRecipeSerializer() {
         return () -> BigBucketsMod.BIG_BUCKET_INCREASE_CAPACITY_RECIPE_SERIALIZER;
     }
 }

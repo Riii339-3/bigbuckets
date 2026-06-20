@@ -5,7 +5,7 @@ import com.williambl.bigbuckets.recipe.BigBucketRecipe;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
+import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -21,17 +21,17 @@ public class BigBucketsMod {
 
     public static final RegistryObject<BigBucketItem> BIG_BUCKET_ITEM = ITEMS.register(
             "big_bucket",
-            () -> new ForgeBigBucketItem(new Item.Properties().tab(CreativeModeTab.TAB_MISC).stacksTo(1))
+            () -> new ForgeBigBucketItem(new Item.Properties().stacksTo(1))
     );
 
-    public static final RegistryObject<SimpleRecipeSerializer<BigBucketRecipe>> BIG_BUCKET_RECIPE_SERIALIZER = RECIPE_SERIALIZERS.register(
+    public static final RegistryObject<SimpleCraftingRecipeSerializer<BigBucketRecipe>> BIG_BUCKET_RECIPE_SERIALIZER = RECIPE_SERIALIZERS.register(
             "crafting_special_big_bucket",
-            () -> new SimpleRecipeSerializer<>(BigBucketRecipe::new)
+            () -> new SimpleCraftingRecipeSerializer<>(BigBucketRecipe::new)
     );
 
-    public static final RegistryObject<SimpleRecipeSerializer<BigBucketIncreaseCapacityRecipe>> BIG_BUCKET_INCREASE_CAPACITY_RECIPE_SERIALIZER = RECIPE_SERIALIZERS.register(
+    public static final RegistryObject<SimpleCraftingRecipeSerializer<BigBucketIncreaseCapacityRecipe>> BIG_BUCKET_INCREASE_CAPACITY_RECIPE_SERIALIZER = RECIPE_SERIALIZERS.register(
             "crafting_special_big_bucket_increase_capacity",
-            () -> new SimpleRecipeSerializer<>(BigBucketIncreaseCapacityRecipe::new)
+            () -> new SimpleCraftingRecipeSerializer<>(BigBucketIncreaseCapacityRecipe::new)
     );
 
     public BigBucketsMod() {

@@ -3,6 +3,7 @@ package com.williambl.bigbuckets;
 import com.mojang.datafixers.util.Pair;
 import com.williambl.bigbuckets.platform.Services;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleTypes;
@@ -28,7 +29,6 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
@@ -108,7 +108,6 @@ public abstract class BigBucketItem extends Item implements DispensibleContainer
         } else {
             BlockState state = level.getBlockState(pos);
             Block block = state.getBlock();
-            Material material = state.getMaterial();
             boolean canBeReplaced = state.canBeReplaced(content);
             boolean canPlace = state.isAir() || canBeReplaced || block instanceof LiquidBlockContainer && ((LiquidBlockContainer)block).canPlaceLiquid(level, pos, state, content);
             if (!canPlace) {
@@ -133,7 +132,7 @@ public abstract class BigBucketItem extends Item implements DispensibleContainer
                 this.drain(stack, Services.FLUIDS.bucketVolume());
                 return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
             } else {
-                if (!level.isClientSide && canBeReplaced && !material.isLiquid()) {
+                if (!level.isClientSide && canBeReplaced && state.getFluidState().isEmpty()) {
                     level.destroyBlock(pos, true);
                 }
 
@@ -175,13 +174,13 @@ public abstract class BigBucketItem extends Item implements DispensibleContainer
         return super.getName(stack).copy().append(Component.literal(" (").append(this.getFluid(stack).defaultFluidState().createLegacyBlock().getBlock().getName()).append(Component.literal(")")));
     }
 
-    @Override
-    public void fillItemCategory(CreativeModeTab itemGroup, NonNullList<ItemStack> itemStacks) {
-        if (this.allowedIn(itemGroup)) {
-            ItemStack stack = new ItemStack(this);
-            this.setCapacity(stack, 16 * Services.FLUIDS.bucketVolume());
-            itemStacks.add(stack);
-        }
+    public static ItemStack createCreativeBigBucket(Item item) {
+        ItemStack stack = new ItemStack(item);
+        ((BigBucketItem)item).setCapacity(
+                stack,
+                16 * Services.FLUIDS.bucketVolume()
+        );
+        return stack;
     }
 
     private Fluid getFluidFromOtherItemStack(ItemStack stack) {
