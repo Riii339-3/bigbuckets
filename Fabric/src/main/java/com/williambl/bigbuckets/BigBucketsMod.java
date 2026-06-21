@@ -17,7 +17,7 @@ import static com.williambl.bigbuckets.BigBucketsCommon.id;
 
 public class BigBucketsMod implements ModInitializer {
 
-    public static FabricBigBucketItem BIG_BUCKET_ITEM = Registry.register(BuiltInRegistries.ITEM, id("bigbuckets:big_bucket"), new FabricBigBucketItem(new Item.Properties().stacksTo(1)));
+    public static FabricBigBucketItem BIG_BUCKET_ITEM = Registry.register(BuiltInRegistries.ITEM, id("big_bucket"), new FabricBigBucketItem(new Item.Properties().stacksTo(1)));
     public static SimpleCraftingRecipeSerializer<BigBucketRecipe> BIG_BUCKET_RECIPE_SERIALIZER = Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, id("crafting_special_big_bucket"), new SimpleCraftingRecipeSerializer<>(BigBucketRecipe::new));
     public static SimpleCraftingRecipeSerializer<BigBucketIncreaseCapacityRecipe> BIG_BUCKET_INCREASE_CAPACITY_RECIPE_SERIALIZER = Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, id("crafting_special_big_bucket_increase_capacity"), new SimpleCraftingRecipeSerializer<>(BigBucketIncreaseCapacityRecipe::new));
 

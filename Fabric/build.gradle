@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '0.12-SNAPSHOT'
+    id 'fabric-loom' version '1.11-SNAPSHOT'
     id 'maven-publish'
     id 'idea'
 }
@@ -46,10 +46,24 @@ processResources {
     }
 }
 
-tasks.withType(JavaCompile) {
+/*
+tasks.withType(JavaCompile).configureEach {
     source(project(":Common").sourceSets.main.allSource)
 }
+*/
 
+sourceSets {
+    main {
+        java {
+            srcDir project(":Common").file("src/main/java")
+        }
+        resources {
+            srcDir project(":Common").file("src/main/resources")
+        }
+    }
+}
+
+/*
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -66,3 +80,5 @@ publishing {
         }
     }
 }
+
+*/
