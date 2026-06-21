@@ -46,22 +46,10 @@ processResources {
     }
 }
 
-/*
 tasks.withType(JavaCompile).configureEach {
     source(project(":Common").sourceSets.main.allSource)
 }
-*/
 
-sourceSets {
-    main {
-        java {
-            srcDir project(":Common").file("src/main/java")
-        }
-        resources {
-            srcDir project(":Common").file("src/main/resources")
-        }
-    }
-}
 
 /*
 publishing {

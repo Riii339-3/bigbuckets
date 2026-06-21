@@ -11,8 +11,10 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -24,55 +26,119 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GuiGraphics.class)
 public abstract class GuiGraphicsMixin {
 
-    GuiGraphics gui = (GuiGraphics)(Object)this;
+    @Unique
+    private void bigBuckets$drawFluidBar(
+            GuiGraphics gui,
+            TextureAtlasSprite sprite,
+            int color,
+            int x,
+            int y,
+            int width
+    ) {
+        if (width <= 0) {
+            return;
+        }
 
-    private void fillRectWithTexture(BufferBuilder bufferBuilder, int i, int j, int k, int l, float u0, float v0, float u1, float v1, int color) {
+        Matrix4f matrix = gui.pose().last().pose();
+
+        float u0 = sprite.getU0();
+        float v0 = sprite.getV0();
+
+        float u1 = sprite.getU(width);
+        float v1 = sprite.getV(1);
+
+        float a = ((color >> 24) & 255) / 255.0F;
+        float r = ((color >> 16) & 255) / 255.0F;
+        float g = ((color >> 8) & 255) / 255.0F;
+        float b = (color & 255) / 255.0F;
+
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        bufferBuilder.vertex(i + 0, j + l, 0.0).uv(u0, v1).color(color).endVertex();
-        bufferBuilder.vertex(i + k, j + l, 0.0).uv(u1, v1).color(color).endVertex();
-        bufferBuilder.vertex(i + k, j + 0, 0.0).uv(u1, v0).color(color).endVertex();
-        bufferBuilder.vertex(i + 0, j + 0, 0.0).uv(u0, v0).color(color).endVertex();
-        BufferUploader.drawWithShader(bufferBuilder.end());
+        RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
+
+        float z = 200.0F;
+
+        BufferBuilder builder = Tesselator.getInstance().getBuilder();
+
+        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+
+        builder.vertex(matrix, x, y + 1, z)
+                .uv(u0, v1)
+                .color(r, g, b, a)
+                .endVertex();
+
+        builder.vertex(matrix, x + width, y + 1, z)
+                .uv(u1, v1)
+                .color(r, g, b, a)
+                .endVertex();
+
+        builder.vertex(matrix, x + width, y, z)
+                .uv(u1, v0)
+                .color(r, g, b, a)
+                .endVertex();
+
+        builder.vertex(matrix, x, y, z)
+                .uv(u0, v0)
+                .color(r, g, b, a)
+                .endVertex();
+
+        BufferUploader.drawWithShader(builder.end());
     }
+    @Inject(
+            method = "renderItemDecorations(Lnet/minecraft/client/gui/Font;Lnet/minecraft/world/item/ItemStack;IILjava/lang/String;)V",
+            at = @At("TAIL")
+    )
+    private void bigBuckets$renderBigBucketBar(
+            Font font,
+            ItemStack stack,
+            int x,
+            int y,
+            String amount,
+            CallbackInfo ci
+    ) {
+        if (!(stack.getItem() instanceof BigBucketItem item)) {
+            return;
+        }
 
-    @Inject(method = "renderItemDecorations(Lnet/minecraft/client/gui/Font;Lnet/minecraft/world/item/ItemStack;IILjava/lang/String;)V", at = @At("HEAD"))
-    private void bigBuckets$renderBigBucketBar(Font textRenderer, ItemStack stack, int x, int y, String amount, CallbackInfo info) {
-        if (stack.getItem() instanceof BigBucketItem item) {
-            if (item.shouldShowBar(stack)) {
-                var data = item.getBucketStorageData(stack);
+        if (!item.shouldShowBar(stack)) {
+            return;
+        }
 
-                RenderSystem.disableDepthTest();
-                RenderSystem.disableBlend();
+        var data = item.getBucketStorageData(stack);
 
-                Tesselator tessellator = Tesselator.getInstance();
-                BufferBuilder builder = tessellator.getBuilder();
+        float progress = (float)data.fullness() / (float)data.capacity();
+        int barWidth = Math.max(0, Math.min(13, (int)(13 * progress)));
 
-                float progress = ((float) data.fullness()) / ((float) data.capacity());
-                int durability = (int) (13 * progress);
+        GuiGraphics gui = (GuiGraphics)(Object)this;
 
-                gui.fill(
-                        x + 2,
-                        y + 13,
-                        x + 15,
-                        y + 15,
-                        0xFF000000
+        gui.fill(
+                x + 2,
+                y + 13,
+                x + 15,
+                y + 15,
+                0xFF000000
+        );
+
+        var fluidRenderer = ClientServices.FLUIDS;
+
+        TextureAtlasSprite sprite =
+                fluidRenderer.getSprite(
+                        data.fluid(),
+                        data.data().orElse(null)
                 );
 
-                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        int color =
+                fluidRenderer.getColor(
+                        data.fluid(),
+                        data.data().orElse(null)
+                );
 
-                var fluidRenderer = ClientServices.FLUIDS;
-
-                TextureAtlasSprite sprite = fluidRenderer.getSprite(data.fluid(), data.data().orElse(null));
-                RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
-
-                int color = fluidRenderer.getColor(data.fluid(), data.data().orElse(null));
-
-                this.fillRectWithTexture(builder, x + 2, y + 13, durability, 1, sprite.getU0(), sprite.getV0(), sprite.getU(durability), sprite.getV(1.0), color);
-
-                RenderSystem.enableBlend();
-                RenderSystem.enableDepthTest();
-            }
-        }
+        bigBuckets$drawFluidBar(
+                gui,
+                sprite,
+                color,
+                x + 2,
+                y + 13,
+                barWidth
+        );
     }
 }
