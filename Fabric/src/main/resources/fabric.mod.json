@@ -6,12 +6,13 @@
     "name": "Big Buckets",
     "description": "This mod adds an upgradable bucket. It can store any fluid, and stores more than the regular bucket can.",
     "authors": [
-      "Will BL"
+      "Will BL(Original)",
+      "Riii3393(1.20.1 Port)"
     ],
     "contact": {
       "homepage": "https://www.curseforge.com/minecraft/mc-mods/bigbuckets",
-      "sources": "https://github.com/williambl/bigbuckets",
-      "issues": "https://github.com/williambl/bigbuckets/issues"
+      "sources": "https://github.com/Riii339-3/bigbuckets",
+      "issues": "https://github.com/Riii339-3/bigbuckets/issues"
     },
   
     "license": "MIT",
@@ -31,7 +32,7 @@
     "depends": {
       "fabricloader": ">=0.14",
       "fabric": "*",
-      "minecraft": "1.19.x",
+      "minecraft": "1.20.1",
       "java": ">=17"
     }
   }

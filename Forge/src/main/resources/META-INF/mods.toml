@@ -1,11 +1,11 @@
 modLoader="javafml"
-loaderVersion="[41,)"
+loaderVersion="[47,)"
 license="MIT"
 [[mods]]
 modId="bigbuckets"
 version="${file.jarVersion}"
 displayName="Big Buckets"
-updateJSONURL="https://raw.githubusercontent.com/williambl/bigbuckets/master/update.json"
+updateJSONURL="https://raw.githubusercontent.com/Riii339-3/bigbuckets/master/update.json"
 displayURL="https://www.curseforge.com/minecraft/mc-mods/bigbuckets"
 logoFile="assets/bigbuckets/icon.png"
 credits=""
